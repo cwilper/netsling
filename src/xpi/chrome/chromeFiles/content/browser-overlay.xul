@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overlay id="netsling-browser-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://netsling/content/netsling.js"/>
+
+  <!-- Create a NetSling menu item -->
+  <menupopup id="menu_ToolsPopup">
+    <menuitem label="NetSling Options..."
+        insertafter="devToolsSeparator" 
+        oncommand="openPreferences('netslingOptionsPane');" />
+  </menupopup>
+
+</overlay>

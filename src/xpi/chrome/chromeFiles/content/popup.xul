@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<dialog id="donothing" title="NetSling"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept"
+        ondialogaccept="return doOK();"
+        ondialogcancel="return doCancel();">
+
+<script>
+<![CDATA[
+var http = new XMLHttpRequest();
+
+function doOK(){
+try {
+  var command = document.getElementById("command").value;
+  if (command == "load") {
+     doLoad();
+     return true;
+  } else if (command.indexOf("#") == 0) {
+     var file = Components.classes["@mozilla.org/file/local;1"]
+                          .createInstance(Components.interfaces.nsILocalFile);
+     file.initWithPath("C:\\WINDOWS\\system32\\cmd.exe");
+     var process = Components.classes['@mozilla.org/process/util;1'].getService(Components.interfaces.nsIProcess);
+     process.init(file);
+//         var arguments= this.parseArgs(this.ieargs());
+//         arguments.push(argumentstext);
+     var arguments = new Array();
+     arguments[0] = "/C";
+     arguments[1] = command.substring(1);
+     process.run(false, arguments, arguments.length);
+     return true;
+  } else if (command.indexOf("=") == 0) {
+     var expr = command.substring(1);
+     var result = eval(expr);
+     document.getElementById("command").value = "=" + result;
+     return false;
+  } else if (command.length > 0) {
+     var parts = command.split(" ");
+     var url = window.opener.urls[parts[0]];
+     var remainder = "";
+     if (parts.length > 1) {
+         for (var i = 1; i < parts.length; i++) {
+             if (i > 1) {
+                 remainder = remainder + " ";
+             }
+             remainder = remainder + parts[i];
+         }
+     }
+     var target;
+     if (url == null) {
+         // fallback to google
+         target = "http://www.google.com/search?hl=en&q=" + escape(command);
+     } else {
+         // we have a match... does the url have > 1 replacement vars?
+         var re = /\$2/;
+         if (re.test(url)) {
+             // yes...so we'll loop each word
+             alert("todo:loop each word");
+         } else {
+             // no, so we'll treat the args as a single string
+             target = url.replace(/\$1/, escape(remainder));
+         }
+     }
+//     alert("target = " + target);
+     window.open(target);
+     return true;
+  }
+} catch (err) {
+  alert("Error: " + err);
+}
+}
+
+function doLoad() {
+
+  var url = "https://api.del.icio.us/v1/posts/all?";
+  var params = "tag=netsling:command";
+  http.open("POST", url, false);
+
+  http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  http.setRequestHeader("Content-length", params.length);
+  http.setRequestHeader("Connection", "close");
+
+  http.send(params);
+
+  var posts = http.responseXML.getElementsByTagName("post");
+  var newurls = new Array();
+  var count = 0;
+  for (var i = 0; i < posts.length; i++) { 
+      var href = posts[i].getAttribute("href"); 
+      var tags = posts[i].getAttribute("tag").split(" ");
+      var cmd = "Command name is missing from tag list!";
+      for (var j = 0; j < tags.length; j++) {
+          if (tags[j] != "netsling:command" && tags[j].indexOf("netsling:") == 0) {
+              cmd = tags[j].substring(9);
+              count++;
+          }
+      }
+      newurls[cmd] = href;
+  }
+  if (count == 0) {
+      alert("No commands were found in your del.icio.us bookmarks!");
+  } else {
+      window.opener.urls = newurls;
+      alert("Loaded " + count + " commands from del.icio.us!");
+  }
+
+
+}
+
+function doLoad2() {
+  	if (http.readyState == 4) {
+  	    if (http.status == 200) {
+            alert(http.responseText);
+        } else {
+            alert("umm, responsecode was " + http.status);
+     	}
+    }
+}
+
+function doCancel(){
+  return true;
+}
+]]>
+</script>
+
+<hbox align="center">
+<!--
+  <label value="Command:"/>
+  <button dlgtype="accept" label="Run"/>
+-->
+  <image src="chrome://netsling/content/images/icon18.png" width="18" height="18" style="margin-right: 5px"/>
+  <textbox tabindex="0" id="command" cols="30" size="30"/>
+  <button tabindex="1" dlgtype="accept" label="Run"/>
+</hbox>
+
+</dialog>

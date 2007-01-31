@@ -1,0 +1,1 @@
+pref("extensions.netsling.delicious.username", "");
