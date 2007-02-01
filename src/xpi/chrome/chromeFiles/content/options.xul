@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<prefwindow id="donothing" title="NetSling Options"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <prefpane id="netslingOptionsPane" label="NetSling Options"
+            onpaneload="populateOptionsPane()"
+            image="chrome://netsling/content/images/icon32.png"
+            buttons="accept">
+    <preferences>
+      <preference id="newpage" name="extensions.netsling.alwaysNewPage" type="bool" instantApply="true"/>
+      <preference id="usetabs" name="extensions.netsling.useTabs" type="bool" instantApply="true"/>
+    </preferences>
+
+    <groupbox>
+      <caption label="Launching"/>
+      <vbox>
+          <checkbox id="alwaysNewPageCheckbox" preference="newpage" label="Always launch results in a new page"/>
+          <checkbox id="useTabsCheckbox" preference="usetabs" label="Use tabs instead of windows when opening a new page"/>
+      </vbox>
+    </groupbox>
+  </prefpane>
+
+</prefwindow>

@@ -36,8 +36,25 @@ try {
      document.getElementById("command").value = "=" + result;
      return false;
   } else if (command.length > 0) {
+     var ampersand = false;
+     if (command.indexOf("&") == command.length - 1) {
+         command = command.substring(0, command.length - 1);
+         ampersand = true;
+     }
      var parts = command.split(" ");
-     var url = window.opener.urls[parts[0]];
+
+     var prefs =  Components.classes["@mozilla.org/preferences-service;1"].
+                         getService(Components.interfaces.nsIPrefService).
+                         getBranch("extensions.netsling.");
+     var cmdPrefs =  Components.classes["@mozilla.org/preferences-service;1"].
+                         getService(Components.interfaces.nsIPrefService).
+                         getBranch("extensions.netsling.command.");
+     var url;
+     
+     if (cmdPrefs.getPrefType(parts[0]) == cmdPrefs.PREF_STRING) {
+         url = cmdPrefs.getCharPref(parts[0]);
+     }
+
      var remainder = "";
      if (parts.length > 1) {
          for (var i = 1; i < parts.length; i++) {
@@ -63,7 +80,15 @@ try {
          }
      }
 //     alert("target = " + target);
-     window.open(target);
+     if (ampersand || prefs.getBoolPref("alwaysNewPage")) {
+         if (prefs.getBoolPref("useTabs")) {
+           window.opener.gBrowser.selectedTab = window.opener.gBrowser.addTab("http://www.google.com/");
+         } else {
+           window.open(target);
+         }
+     } else {
+         window.opener.content.location = target;
+     }
      return true;
   }
 } catch (err) {
@@ -84,9 +109,14 @@ function doLoad() {
   http.send(params);
 
   var posts = http.responseXML.getElementsByTagName("post");
-  var newurls = new Array();
-  var count = 0;
-  for (var i = 0; i < posts.length; i++) { 
+
+  if (posts.length > 0) {
+    var cmdPrefs = Components.classes["@mozilla.org/preferences-service;1"].
+                        getService(Components.interfaces.nsIPrefService).
+                        getBranch("extensions.netsling.command.");
+    cmdPrefs.deleteBranch("");
+    var count = 0;
+    for (var i = 0; i < posts.length; i++) { 
       var href = posts[i].getAttribute("href"); 
       var tags = posts[i].getAttribute("tag").split(" ");
       var cmd = "Command name is missing from tag list!";
@@ -96,13 +126,13 @@ function doLoad() {
               count++;
           }
       }
-      newurls[cmd] = href;
-  }
-  if (count == 0) {
-      alert("No commands were found in your del.icio.us bookmarks!");
-  } else {
-      window.opener.urls = newurls;
-      alert("Loaded " + count + " commands from del.icio.us!");
+      cmdPrefs.setCharPref(cmd, href);
+    }
+    if (count == 0) {
+        alert("No commands were found in your del.icio.us bookmarks!");
+    } else {
+         alert("Loaded " + count + " commands from del.icio.us!");
+    }
   }
 
 
@@ -125,12 +155,8 @@ function doCancel(){
 </script>
 
 <hbox align="center">
-<!--
-  <label value="Command:"/>
-  <button dlgtype="accept" label="Run"/>
--->
   <image src="chrome://netsling/content/images/icon18.png" width="18" height="18" style="margin-right: 5px"/>
-  <textbox tabindex="0" id="command" cols="30" size="30"/>
+  <textbox tabindex="0" id="command" cols="25" size="25"/>
   <button tabindex="1" dlgtype="accept" label="Run"/>
 </hbox>
 

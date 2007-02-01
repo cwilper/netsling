@@ -23,5 +23,6 @@
   <em:description>Smart Bookmarks</em:description>
   <em:creator>Chris Wilper</em:creator>
   <em:homepageURL>http://cwilper.blogspot.com/</em:homepageURL>
+  <em:optionsURL>chrome://netsling/content/options.xul</em:optionsURL>
   </Description>
 </RDF>
