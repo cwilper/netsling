@@ -1,4 +1,12 @@
 pref("extensions.netsling.firstRun", true);
 pref("extensions.netsling.alwaysNewPage", false);
 pref("extensions.netsling.useTabs", false);
-pref("extensions.netsling.command.hey", "http://cnn.com/");
+pref("extensions.netsling.command.edit", "http://del.icio.us/post?url=$u&title=$t&notes=&v=4&noui&jump=close&src=netsling0.8");
+pref("extensions.netsling.command.save", "http://del.icio.us/post?url=$u&title=$t&notes=&v=4&noui&jump=close&src=netsling0.8");
+pref("extensions.netsling.command.weather", "http://www.weather.com/search/enhanced?where=$1");
+pref("extensions.netsling.command.help", "http://code.google.com/p/netsling/wiki/HelpPage");
+pref("extensions.netsling.command.imdb", "http://imdb.com/find?q=$1");
+pref("extensions.netsling.command.img", "http://images.google.com/images?q=$1");
+pref("extensions.netsling.command.map", "http://maps.google.com/maps?f=q&hl=en&q=$1");
+pref("extensions.netsling.command.youtube", "http://youtube.com/results?search_query=$1");
+pref("extensions.netsling.command.ebay", "http://search.ebay.com/search/search.dll?cgiurl=http%3A%2F%2Fcgi.ebay.com%2Fws%2F&fkr=1&from=R8&satitle=$1");

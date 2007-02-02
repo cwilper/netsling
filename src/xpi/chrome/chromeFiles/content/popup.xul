@@ -11,10 +11,33 @@
 <![CDATA[
 var http = new XMLHttpRequest();
 
+// Removes leading whitespaces
+function LTrim( value ) {
+	var re = /\s*((\S+\s*)*)/;
+	return value.replace(re, "$1");
+}
+
+// Removes ending whitespaces
+function RTrim( value ) {
+	var re = /((\s*\S+)*)\s*/;
+	return value.replace(re, "$1");
+}
+
+// Removes leading and ending whitespaces
+function trim( value ) {
+	return LTrim(RTrim(value));
+}
+
+
 function doOK(){
 try {
-  var command = document.getElementById("command").value;
-  if (command == "load") {
+
+  var currentURL = window.opener.gBrowser.currentURI.spec;
+  var currentTitle = window.opener.content.document.title;
+
+  var command = trim(document.getElementById("command").value);
+
+  if (command == "reload") {
      doLoad();
      return true;
   } else if (command.indexOf("#") == 0) {
@@ -43,6 +66,48 @@ try {
      }
      var parts = command.split(" ");
 
+     if (parts[0] == "call") {
+       if (parts.length < 2) {
+           alert("Oops!  The call command needs at least one argument.");
+           return true;
+       }
+       if (command.substring(command.length - 1) == "?") {
+         // they want interactive mode (it might take params, or they
+         // want to add notes, tags, etc)
+         alert("Sorry...interactive calling's not implemented yet!"); 
+       } else {
+         // they want quick mode..just save it
+
+         var url = "https://api.del.icio.us/v1/posts/add?";
+
+         var params = "url=" + escape(currentURL) + "&description=" + escape(currentTitle) + "&tags=netsling:command+netsling:" + parts[1];
+
+         var remainder = getRemainder(parts, 2);
+         if (remainder != "") {
+           params = params + "&extended=" + escape(remainder);
+         }
+
+         alert("Ok, this might take a few seconds...\n\nThe browser may appear locked up,\nbut it's really sending data\nto del.icio.us.\nThis will be fixed in the next release.\nHit OK to save this alias to del.icio.us.");
+
+         http.open("POST", url, false);
+
+         http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+         http.setRequestHeader("Content-length", params.length);
+         http.setRequestHeader("Connection", "close");
+         http.send(params);
+
+         var tempText = http.responseText;
+
+         // assume it worked and save locally
+
+         var cmdPrefs =  Components.classes["@mozilla.org/preferences-service;1"].
+                             getService(Components.interfaces.nsIPrefService).
+                             getBranch("extensions.netsling.command.");
+         cmdPrefs.setCharPref(parts[1], currentURL);
+       }
+       return true;
+     }
+
      var prefs =  Components.classes["@mozilla.org/preferences-service;1"].
                          getService(Components.interfaces.nsIPrefService).
                          getBranch("extensions.netsling.");
@@ -55,15 +120,8 @@ try {
          url = cmdPrefs.getCharPref(parts[0]);
      }
 
-     var remainder = "";
-     if (parts.length > 1) {
-         for (var i = 1; i < parts.length; i++) {
-             if (i > 1) {
-                 remainder = remainder + " ";
-             }
-             remainder = remainder + parts[i];
-         }
-     }
+     var remainder = getRemainder(parts, 1);
+
      var target;
      if (url == null) {
          // fallback to google
@@ -78,11 +136,15 @@ try {
              // no, so we'll treat the args as a single string
              target = url.replace(/\$1/, escape(remainder));
          }
+         target = target.replace(/\$u/, escape(currentURL));
+         target = target.replace(/\$t/, escape(currentTitle));
      }
-//     alert("target = " + target);
-     if (ampersand || prefs.getBoolPref("alwaysNewPage")) {
+
+     if (command == "save" || command == "edit") {
+         openCentered(target, 700, 400);
+     } else if (ampersand || prefs.getBoolPref("alwaysNewPage")) {
          if (prefs.getBoolPref("useTabs")) {
-           window.opener.gBrowser.selectedTab = window.opener.gBrowser.addTab("http://www.google.com/");
+           window.opener.gBrowser.selectedTab = window.opener.gBrowser.addTab(target);
          } else {
            window.open(target);
          }
@@ -94,6 +156,28 @@ try {
 } catch (err) {
   alert("Error: " + err);
 }
+}
+
+function getRemainder(parts, startIndex) {
+     var remainder = "";
+     if (parts.length > startIndex) {
+         for (var i = startIndex; i < parts.length; i++) {
+             if (i > startIndex) {
+                 remainder = remainder + " ";
+             }
+             remainder = remainder + parts[i];
+         }
+     }
+     return remainder;
+}
+
+function openCentered(url, aWidth, aHeight) {
+      var width = aWidth, height = aHeight;
+      var left = parseInt((screen.availWidth/2) - (width/2)); 
+      var top  = parseInt((screen.availHeight/2) - (height/2));
+      var props = "width="+width+",height="+height+",left="+left+",top="+top+",menubar=0,toolbar=0,scrollbars=1,location=0,status=1,resizable=1";
+      var newWindow = window.open(url, "", props);      
+      newWindow.focus();
 }
 
 function doLoad() {
@@ -114,7 +198,37 @@ function doLoad() {
     var cmdPrefs = Components.classes["@mozilla.org/preferences-service;1"].
                         getService(Components.interfaces.nsIPrefService).
                         getBranch("extensions.netsling.command.");
+
+
+
     cmdPrefs.deleteBranch("");
+
+
+
+
+// defaults!!!!
+// defaults!!!!
+// defaults!!!!
+// defaults!!!!
+// defaults!!!!
+// defaults!!!!
+// defaults!!!!
+
+
+
+
+    cmdPrefs.setCharPref("edit", "http://del.icio.us/post?url=$u&title=$t&notes=&v=4&noui&jump=close&src=netsling0.8");
+    cmdPrefs.setCharPref("save", "http://del.icio.us/post?url=$u&title=$t&notes=&v=4&noui&jump=close&src=netsling0.8");
+    cmdPrefs.setCharPref("weather", "http://www.weather.com/search/enhanced?where=$1");
+    cmdPrefs.setCharPref("imdb", "http://imdb.com/find?q=$1");
+    cmdPrefs.setCharPref("img", "http://images.google.com/images?q=$1");
+    cmdPrefs.setCharPref("map", "http://maps.google.com/maps?f=q&hl=en&q=$1");
+    cmdPrefs.setCharPref("youtube", "http://youtube.com/results?search_query=$1");
+    cmdPrefs.setCharPref("ebay", "http://search.ebay.com/search/search.dll?cgiurl=http%3A%2F%2Fcgi.ebay.com%2Fws%2F&fkr=1&from=R8&satitle=$1");
+    cmdPrefs.setCharPref("help", "http://code.google.com/p/netsling/wiki/HelpPage");
+
+
+
     var count = 0;
     for (var i = 0; i < posts.length; i++) { 
       var href = posts[i].getAttribute("href"); 
@@ -138,12 +252,12 @@ function doLoad() {
 
 }
 
-function doLoad2() {
+function tellIfError() {
   	if (http.readyState == 4) {
   	    if (http.status == 200) {
-            alert(http.responseText);
+            window.opener.alert(http.responseText);
         } else {
-            alert("umm, responsecode was " + http.status);
+            window.opener.alert("Error from server, response code was " + http.status);
      	}
     }
 }
@@ -155,7 +269,7 @@ function doCancel(){
 </script>
 
 <hbox align="center">
-  <image src="chrome://netsling/content/images/icon18.png" width="18" height="18" style="margin-right: 5px"/>
+  <image id="butterfly" src="chrome://netsling/content/images/icon18.png" width="18" height="18" style="margin-right: 5px"/>
   <textbox tabindex="0" id="command" cols="25" size="25"/>
   <button tabindex="1" dlgtype="accept" label="Run"/>
 </hbox>
