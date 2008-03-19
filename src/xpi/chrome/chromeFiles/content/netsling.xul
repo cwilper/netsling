@@ -64,6 +64,11 @@ try {
          command = command.substring(0, command.length - 1);
          ampersand = true;
      }
+     var bang = false;
+     if (command.indexOf("!") == command.length - 1) {
+         command = command.substring(0, command.length - 1);
+         bang = true;
+     }
      var parts = command.split(" ");
 
      if (parts[0] == "call") {
@@ -125,7 +130,11 @@ try {
      var target;
      if (url == null) {
          // fallback to google
-         target = "http://www.google.com/search?hl=en&q=" + escape(command);
+         if (bang) {
+             target = "http://www.google.com/search?hl=en&btnI=I%27m+Feeling+Lucky&q=" + escape(command);
+         } else {
+             target = "http://www.google.com/search?hl=en&q=" + escape(command);
+         }
      } else {
          // we have a match... does the url have > 1 replacement vars?
          var re = /\$2/;
