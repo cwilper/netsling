@@ -1,6 +1,6 @@
 function netsling(event) {
     if (event.ctrlKey && event.charCode == 32) {
-        window.openDialog("chrome://netsling/content/popup.xul", "netsling", "chrome,centerscreen");
+        window.openDialog("chrome://netsling/content/netsling.xul", "netsling", "chrome,centerscreen");
     }
 }
 

@@ -1,3 +1,2 @@
 content   netsling   chrome/chromeFiles/content/
 overlay   chrome://browser/content/browser.xul   chrome://netsling/content/browser-overlay.xul
-overlay   chrome://browser/content/preferences/preferences.xul   chrome://netsling/content/preferences-overlay.xul
