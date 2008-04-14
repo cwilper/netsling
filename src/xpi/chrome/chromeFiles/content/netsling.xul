@@ -71,7 +71,7 @@ try {
      }
      var parts = command.split(" ");
 
-     if (parts[0] == "call") {
+     if (parts[0] == "call" || parts[0] == "pcall") {
        if (parts.length < 2) {
            alert("Oops!  The call command needs at least one argument.");
            return true;
@@ -86,6 +86,9 @@ try {
          var url = "https://api.del.icio.us/v1/posts/add?";
 
          var params = "url=" + escape(currentURL) + "&description=" + escape(currentTitle) + "&tags=netsling:command+netsling:" + parts[1];
+         if (parts[0] == "pcall") {
+             params = params + "&shared=no";
+         }
 
          var remainder = getRemainder(parts, 2);
          if (remainder != "") {
