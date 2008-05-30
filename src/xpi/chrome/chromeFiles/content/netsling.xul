@@ -146,10 +146,10 @@ try {
              alert("todo:loop each word");
          } else {
              // no, so we'll treat the args as a single string
-             target = url.replace(/\$1/, escape(remainder));
+             target = url.replace(/\$1/g, escape(remainder));
          }
-         target = target.replace(/\$u/, escape(currentURL));
-         target = target.replace(/\$t/, escape(currentTitle));
+         target = target.replace(/\$u/g, escape(currentURL));
+         target = target.replace(/\$t/g, escape(currentTitle));
      }
 
      if (command == "save" || command == "edit") {
