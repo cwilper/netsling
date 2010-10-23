@@ -9,7 +9,7 @@
     <popupset id="netsling-popupset">
       <menupopup id="netsling-popup" position="before_start">
         <menuitem label="Options..." oncommand="window.openDialog('chrome://netsling/content/options.xul', 'netsling-options', 'chrome,centerscreen');"/>
-        <menuitem label="About NetSling" oncommand="alert('NetSling is in alpha testing\n\nHit CTRL-SPACE, then enter help for more info.');"/>
+        <menuitem label="About NetSling" oncommand="alert('Hit CTRL-m, then enter help for more info.');"/>
       </menupopup>
     </popupset>
   </window>

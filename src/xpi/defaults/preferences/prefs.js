@@ -1,6 +1,6 @@
 pref("extensions.netsling.firstRun", true);
 pref("extensions.netsling.alwaysNewPage", false);
-pref("extensions.netsling.useTabs", false);
+pref("extensions.netsling.useTabs", true);
 pref("extensions.netsling.command.edit", "http://del.icio.us/post?url=$u&title=$t&notes=&v=4&noui&jump=close&src=netsling0.8");
 pref("extensions.netsling.command.save", "http://del.icio.us/post?url=$u&title=$t&notes=&v=4&noui&jump=close&src=netsling0.8");
 pref("extensions.netsling.command.weather", "http://www.weather.com/search/enhanced?where=$1");
