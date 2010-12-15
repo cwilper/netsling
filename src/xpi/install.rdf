@@ -4,7 +4,7 @@
 
 <Description about="urn:mozilla:install-manifest">
   <em:id>netsling@gmail.com</em:id>
-  <em:version>0.9.5</em:version>
+  <em:version>0.9.6</em:version>
   <em:type>2</em:type>
   <em:iconURL>chrome://netsling/content/images/icon32.png</em:iconURL>
 
@@ -22,7 +22,7 @@
   <em:name>NetSling</em:name>
   <em:description>Smart Bookmarks</em:description>
   <em:creator>Chris Wilper</em:creator>
-  <em:homepageURL>http://cwilper.blogspot.com/</em:homepageURL>
+  <em:homepageURL>https://github.com/cwilper/netsling</em:homepageURL>
   <em:optionsURL>chrome://netsling/content/options.xul</em:optionsURL>
   </Description>
 </RDF>

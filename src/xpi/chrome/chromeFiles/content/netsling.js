@@ -1,5 +1,5 @@
 function netsling(event) {
-    if (event.ctrlKey && event.charCode == 109) {
+    if (event.ctrlKey && event.charCode == 77) {
         window.openDialog("chrome://netsling/content/netsling.xul", "netsling", "chrome,centerscreen");
     }
 }
