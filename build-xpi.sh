@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # also change this in src/xpi/install.rdf before doing a release
-version=0.9.6
+version=0.9.7
 
 filename=netsling-$version.xpi
 
